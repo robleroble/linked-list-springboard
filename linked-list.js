@@ -58,9 +58,10 @@ class LinkedList {
     }
     let returnVal = this.tail.val;
     let currentNode = this.head;
+
     // find node where this.tail is the next node
     // this node will become the new node when we pop
-    while (currentNode.next != this.tail) {
+    while (currentNode.next != this.tail && this.length > 1) {
       currentNode = currentNode.next;
     }
 
@@ -68,6 +69,11 @@ class LinkedList {
     currentNode.next = null;
 
     this.length = this.length - 1;
+    // if popping last value, tail and head become null
+    if (this.length === 0) {
+      this.tail = null;
+      this.head = null;
+    }
     return returnVal;
   }
 
@@ -81,6 +87,10 @@ class LinkedList {
     let returnVal = this.head.val;
     this.head = this.head.next;
     this.length = this.length - 1;
+    if (this.length === 0) {
+      this.tail = null;
+      this.head = null;
+    }
     return returnVal;
   }
 
@@ -124,6 +134,12 @@ class LinkedList {
   insertAt(idx, val) {
     const newNode = new Node(val);
 
+    // if list is empty
+    if (this.length === 0) {
+      this.head = newNode;
+      this.tail = newNode;
+    }
+
     // if idx is 0, we have to replace this.head
     if (idx === 0) {
       newNode.next = this.head;
@@ -137,7 +153,7 @@ class LinkedList {
 
       while (currIdx != idxMinusOne) {
         // we can only insert nodes if the currentIdx exists
-        if (this.length - 1 < idx) {
+        if (this.length < idx) {
           throw new Error(
             "This index does not exist. You can't create a new node with this method."
           );
@@ -149,6 +165,10 @@ class LinkedList {
       let nodeToInsertBefore = currNode.next;
       currNode.next = newNode;
       newNode.next = nodeToInsertBefore;
+      // case for when node is inserted as tail
+      if (currIdx === idxMinusOne) {
+        this.tail = newNode;
+      }
     }
     this.length = this.length + 1;
   }
@@ -162,11 +182,16 @@ class LinkedList {
         "This index does not exist, so there's nothing to remove!"
       );
     }
+
     // if idx is 0, we change this.head to be the current head's next node
     if (idx === 0) {
       let nodeToRemove = this.head;
       this.head = this.head.next;
       this.length = this.length - 1;
+      if (this.length === 0) {
+        this.head = null;
+        this.tail = null;
+      }
       return nodeToRemove.val;
     }
 
@@ -198,6 +223,10 @@ class LinkedList {
   /** average(): return an average of all values in the list */
 
   average() {
+    // if linked list is empty
+    if (this.length === 0) {
+      return 0;
+    }
     // placeholder variable to store total value of nodes
     let sum = 0;
     // placeholder variable to store count of nodes
@@ -222,3 +251,5 @@ testList.push(2);
 testList.push(3);
 testList.push(4);
 testList.push(5);
+
+module.exports = LinkedList;
