@@ -75,7 +75,7 @@ class LinkedList {
 
   shift() {
     if (this.length === 0) {
-      throw new Error("The list is empty!")
+      throw new Error("The list is empty!");
     }
 
     let returnVal = this.head.val;
@@ -92,10 +92,10 @@ class LinkedList {
 
     while (currIdx != idx) {
       if (currNode.next === null) {
-        throw new Error("This index does not exist")
+        throw new Error("This index does not exist");
       }
       currNode = currNode.next;
-      currIdx = currIdx +1;
+      currIdx = currIdx + 1;
     }
     return currNode.val;
   }
@@ -108,7 +108,9 @@ class LinkedList {
 
     while (currIdx != idx) {
       if (currNode.next === null) {
-        throw new Error("This index does not exist. You can't create a new node with this method.")
+        throw new Error(
+          "This index does not exist. You can't create a new node with this method."
+        );
       }
       currNode = currNode.next;
       currIdx = currIdx + 1;
@@ -122,8 +124,54 @@ class LinkedList {
   insertAt(idx, val) {
     const newNode = new Node(val);
 
-    const idxMinusOne = idx - 1;
+    // if idx is 0, we have to replace this.head
+    if (idx === 0) {
+      newNode.next = this.head;
+      this.head = newNode;
+    } else {
+      // otherwise, we traverse through nodes until we find the node before idx (we need to change this nodes next value)
+      const idxMinusOne = idx - 1;
 
+      let currNode = this.head;
+      let currIdx = 0;
+
+      while (currIdx != idxMinusOne) {
+        // we can only insert nodes if the currentIdx exists
+        if (this.length - 1 < idx) {
+          throw new Error(
+            "This index does not exist. You can't create a new node with this method."
+          );
+        }
+        currNode = currNode.next;
+        currIdx = currIdx + 1;
+      }
+      // change next Node to be the newNode
+      let nodeToInsertBefore = currNode.next;
+      currNode.next = newNode;
+      newNode.next = nodeToInsertBefore;
+    }
+    this.length = this.length + 1;
+  }
+
+  /** removeAt(idx): return & remove item at idx, */
+
+  removeAt(idx) {
+    // if idx does not exist, throw error
+    if (idx > this.length - 1) {
+      throw new Error(
+        "This index does not exist, so there's nothing to remove!"
+      );
+    }
+    // if idx is 0, we change this.head to be the current head's next node
+    if (idx === 0) {
+      let nodeToRemove = this.head;
+      this.head = this.head.next;
+      this.length = this.length - 1;
+      return nodeToRemove.val;
+    }
+
+    // traverse thru list to find node previous to node being removed
+    const idxMinusOne = idx - 1;
     let currNode = this.head;
     let currIdx = 0;
 
@@ -131,20 +179,38 @@ class LinkedList {
       currNode = currNode.next;
       currIdx = currIdx + 1;
     }
-    
-    let nodeToInsertBefore = currNode.next;
-    currNode.next = newNode;
-    newNode.next = nodeToInsertBefore;
-    this.length = this.length +1;
+    // once we find node located before node to be removed, we change the next value to be targetNode's next value...
+    // if node to be removed is tail:
+    if (currNode.next === this.tail) {
+      let nodeToRemove = currNode.next;
+      this.tail = currNode;
+      currNode.next = null;
+      this.length = this.length - 1;
+      return nodeToRemove.val;
+    } else {
+      let nodeToRemove = currNode.next;
+      currNode.next = nodeToRemove.next;
+      this.length = this.length - 1;
+      return nodeToRemove.val;
+    }
   }
-
-  /** removeAt(idx): return & remove item at idx, */
-
-  removeAt(idx) {}
 
   /** average(): return an average of all values in the list */
 
-  average() {}
+  average() {
+    // placeholder variable to store total value of nodes
+    let sum = 0;
+    // placeholder variable to store count of nodes
+    let count = 0;
+
+    let currNode = this.head;
+    while (currNode) {
+      sum = sum + currNode.val;
+      count = count + 1;
+      currNode = currNode.next;
+    }
+    return sum / count;
+  }
 }
 
 // module.exports = LinkedList;
