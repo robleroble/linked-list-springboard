@@ -23,15 +23,18 @@ class LinkedList {
   push(val) {
     const newNode = new Node(val);
 
+    // if list is empty (no this.head)
     if (!this.head) {
       this.head = newNode;
       this.tail = newNode;
     } else {
+      // takes current tail and sets next to be new node
       this.tail.next = newNode;
+      // make newNode the new tail
       this.tail = newNode;
     }
 
-    this.length = this.length + 1;
+    this.length++;
   }
 
   /** unshift(val): add new value to start of list. */
@@ -39,37 +42,46 @@ class LinkedList {
   unshift(val) {
     const newNode = new Node(val);
 
+    // if list is empty
     if (!this.head) {
       this.head = newNode;
       this.tail = newNode;
     } else {
+      // set newNode's next to be current head
       newNode.next = this.head;
+      // make newNode the new head
       this.head = newNode;
     }
 
-    this.length = this.length + 1;
+    this.length++;
   }
 
   /** pop(): return & remove last item. */
 
   pop() {
+    // if list is empty, we can't pop off a node
     if (this.length === 0) {
       throw new Error("The list is empty!");
     }
-    let returnVal = this.tail.val;
-    let currentNode = this.head;
 
+    // store tail.val in a variable so we can return its val at the end of func
+    let returnVal = this.tail.val;
+
+    // store head in a var to traverse list
+    let currentNode = this.head;
     // find node where this.tail is the next node
-    // this node will become the new node when we pop
+    // this node will become the new tail when we pop
     while (currentNode.next != this.tail && this.length > 1) {
       currentNode = currentNode.next;
     }
 
+    // set new tail and set next as null
     this.tail = currentNode;
     currentNode.next = null;
 
-    this.length = this.length - 1;
-    // if popping last value, tail and head become null
+    this.length--;
+
+    // if after popping we have an empty list, nothing will remain so we set tail and head to null
     if (this.length === 0) {
       this.tail = null;
       this.head = null;
@@ -80,13 +92,19 @@ class LinkedList {
   /** shift(): return & remove first item. */
 
   shift() {
+    // if list is empty, we can't remove anything
     if (this.length === 0) {
       throw new Error("The list is empty!");
     }
 
+    // store head.tail in var to return at end of func
     let returnVal = this.head.val;
+
+    // re-set head to be the current head's next node
     this.head = this.head.next;
-    this.length = this.length - 1;
+    this.length--;
+
+    // if list is empty after removing head, we set head and tail to be null
     if (this.length === 0) {
       this.tail = null;
       this.head = null;
@@ -97,13 +115,17 @@ class LinkedList {
   /** getAt(idx): get val at idx. */
 
   getAt(idx) {
+    // store head in var and set idx to traverse to target idx
     let currNode = this.head;
     let currIdx = 0;
 
+    // traverse thru list until we find currentNode with index of target idx
     while (currIdx != idx) {
+      // if we get to end of list without reaching target index, index doesn't exist in list
       if (currNode.next === null) {
         throw new Error("This index does not exist");
       }
+      // increment until we reach targetIdx
       currNode = currNode.next;
       currIdx = currIdx + 1;
     }
@@ -113,19 +135,22 @@ class LinkedList {
   /** setAt(idx, val): set val at idx to val */
 
   setAt(idx, val) {
+    // store head in var and set idx to traverse to target idx
     let currNode = this.head;
     let currIdx = 0;
 
+    // traverse thru list until we find currentNode with index of target idx
     while (currIdx != idx) {
+      // if we get to end of list without reaching target index, index doesn't exist in list
       if (currNode.next === null) {
-        throw new Error(
-          "This index does not exist. You can't create a new node with this method."
-        );
+        throw new Error("This index does not exist in this list.");
       }
+      // increment until we reach targetIdx
       currNode = currNode.next;
       currIdx = currIdx + 1;
     }
 
+    // when we reach targetIdx, change node's val
     currNode.val = val;
   }
 
@@ -145,32 +170,37 @@ class LinkedList {
       newNode.next = this.head;
       this.head = newNode;
     } else {
-      // otherwise, we traverse through nodes until we find the node before idx (we need to change this nodes next value)
+      // we want to find node just before target node to change its next val to be newNode
       const idxMinusOne = idx - 1;
 
+      // store currNode and currIdx to traverse thru list
       let currNode = this.head;
       let currIdx = 0;
 
+      // traverse thru list until we find idxMinusOne
       while (currIdx != idxMinusOne) {
-        // we can only insert nodes if the currentIdx exists
-        if (this.length < idx) {
+        // we can only insert nodes if the currentIdx exists or if we insert at end as new tail
+        if (idx > this.length) {
           throw new Error(
             "This index does not exist. You can't create a new node with this method."
           );
         }
+        // increment
         currNode = currNode.next;
         currIdx = currIdx + 1;
       }
-      // change next Node to be the newNode
+      // make next of newNode be the node at the targetIdx
       let nodeToInsertBefore = currNode.next;
+      // set next of node before targetIdx to be newNode
       currNode.next = newNode;
+      // set next val for newNode
       newNode.next = nodeToInsertBefore;
       // case for when node is inserted as tail
       if (currIdx === idxMinusOne) {
         this.tail = newNode;
       }
     }
-    this.length = this.length + 1;
+    this.length++;
   }
 
   /** removeAt(idx): return & remove item at idx, */
@@ -187,7 +217,8 @@ class LinkedList {
     if (idx === 0) {
       let nodeToRemove = this.head;
       this.head = this.head.next;
-      this.length = this.length - 1;
+      this.length--;
+      // set head and tail to null if list is empty after removing node
       if (this.length === 0) {
         this.head = null;
         this.tail = null;
@@ -241,15 +272,5 @@ class LinkedList {
     return sum / count;
   }
 }
-
-// module.exports = LinkedList;
-
-const testList = new LinkedList([]);
-
-testList.push(1);
-testList.push(2);
-testList.push(3);
-testList.push(4);
-testList.push(5);
 
 module.exports = LinkedList;
